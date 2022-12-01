@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "module": "ES2020",
+    "target": "ES2015"
+  },
+  "ts-node": {
+    "esm": true
+  }
+}
