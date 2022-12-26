@@ -1,4 +1,4 @@
-import { CategoryDistribution, TraitFrequency } from "./types";
+import { CategoryDistribution, TraitFrequency } from "../types/types";
 
 export default class UnassignedTraitsInCategory {
   public readonly categoryName: string;
@@ -26,7 +26,7 @@ export default class UnassignedTraitsInCategory {
     return availableTraitsBeforeAssignment;
   }
 
-  consumeRandomTraitName(): string | never {
+  consumeRandomTrait(): string | never {
     if (this.assignmentEnded())
       throw new Error(this.ASSIGNMENT_ENDED_ERROR_MESSAGE);
 

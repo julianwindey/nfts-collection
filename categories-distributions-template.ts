@@ -1,4 +1,4 @@
-import { CategoryDistribution } from "./traits-setter/types";
+import { CategoryDistribution } from "./types/types";
 
 const categoriesDistributionsTemplate: CategoryDistribution[] = [
   {

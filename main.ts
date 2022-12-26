@@ -1,41 +1,25 @@
+import SharpImageComposer from "./image-composer/SharpImageComposer.js";
+import HttpClientIpfsDeployer from "./ipfs-deployer/HttpClientIpfsDeployer.js";
 import categoriesDistributionsTemplate from "./categories-distributions-template.js";
-import ImageComposer from "./image-composer/ImageComposer.js";
-import IPFSDeployer, { NFTMetadata } from "./ipfs-deployer/IpfsDeployer.js";
-import TraitsSetter from "./traits-setter/TraitsSetter.js";
-import { create } from "ipfs-core";
-import { NFTStorage, File } from "nft.storage";
+import CollectionBuilder from "./collection-builder/CollectionBuilder.js";
 
-async function generateCollection() {
-  const NFT_STORAGE_KEY = {
-    token:
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGFiRjk3QTYyM2Q4MzcyMEU1NDEzQjkyOWIzMDVjNDg5OWIzNTI5RkYiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY2OTc2MDQzMTYyMywibmFtZSI6IkFsZ28gc2t1bGxzIHRlc3QgY29sbGVjdGlvbiJ9.e5rPlOfljbLf_knPeOGEKLiiyEf5Wrh_Lhc4ALFYyl0",
-  };
-  const NFTStorageInstance = new NFTStorage(NFT_STORAGE_KEY);
+const COLLECTION_SIZE = 60;
+const LAYER_IMAGES_DIRECTORY = "./media/algoskulls/";
+const COMPOSED_IMAGES_OUTPUT_DIRECTORY = "./media/processed-images/";
+const nftCollectionBuilder = new CollectionBuilder(
+  COLLECTION_SIZE,
+  LAYER_IMAGES_DIRECTORY,
+  COMPOSED_IMAGES_OUTPUT_DIRECTORY,
+  categoriesDistributionsTemplate
+);
 
-  const metadataTemplate: NFTMetadata = {
-    name: "",
-    description: "Trantorian official pack",
-    image: "",
-    image_mimetype: "img/png",
-    properties: {},
-  };
-
-  const traitsSetter = new TraitsSetter(60, categoriesDistributionsTemplate);
-  traitsSetter.setTraits();
-  const imageComposer = new ImageComposer(traitsSetter.assignedTraitsOnNFTs);
-  imageComposer.compose();
-
-  const ipfs = await create();
-  const ipfsDeployer = new IPFSDeployer(
-    traitsSetter.assignedTraitsOnNFTs,
-    "./media/processed-images/",
-    metadataTemplate,
-    ipfs,
-    NFTStorageInstance
-  );
-  const paths = await ipfsDeployer.deploy();
-
-  console.log(paths);
-}
-
-generateCollection();
+const sharpComposer = new SharpImageComposer(1872, 1872);
+const host = "127.0.0.1";
+const port = 5001;
+const authorization = "CAESIHRt0mBcoweEnM84UQ8A/WfNJp/KQmjNbgv6zrJBPoq5";
+const httpClientIpfsDeployer = new HttpClientIpfsDeployer(
+  host,
+  port,
+  authorization
+);
+nftCollectionBuilder.build(sharpComposer, httpClientIpfsDeployer);

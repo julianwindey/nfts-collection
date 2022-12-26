@@ -14,6 +14,7 @@
     "@types/sharp": "^0.31.0",
     "ipfs-core": "^0.17.0",
     "ipfs-core-types": "^0.13.0",
+    "ipfs-http-client": "^59.0.0",
     "nft.storage": "^7.0.0",
     "sharp": "^0.31.2"
   }

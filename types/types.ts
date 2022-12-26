@@ -8,11 +8,13 @@ export interface CategoryDistribution {
   traitsFrequencies: TraitFrequency[];
 }
 
-export interface AssignedTraitsOnNFT {
-  ID: number;
-  traits: AssignedTraitsFromCategories;
+export interface AssignedTraitsOnNft {
+  nftId: number;
+  assignedTraits: AssignedTraitsFromCategories;
 }
 
 export interface AssignedTraitsFromCategories {
-  [categoryName: string]: string;
+  [categoryName: string]: Trait;
 }
+
+type Trait = string;
