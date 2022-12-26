@@ -1,8 +1,13 @@
 import setTraitsOnNftCollection from "../set-traits-on-collection/setTraitsOnCollection.js";
 import ImageComposer from "../image-composer/ImageComposer.js";
 import IpfsDeployer from "../ipfs-deployer/IpfsDeployer.js";
-import { AssignedTraitsOnNft, CategoryDistribution } from "../types/types.js";
+import {
+  AssignedTraitsOnNft,
+  CategoryDistribution,
+  MetadataIpfsCidResponse,
+} from "../types/types.js";
 import NftMetadata from "../nft-metadata/NftMetadata.js";
+import writeToFile from "../utils/writeToFile.js";
 
 export default class CollectionBuilder {
   private readonly assignedTraitsOnNfts: AssignedTraitsOnNft[];
@@ -19,12 +24,17 @@ export default class CollectionBuilder {
     );
   }
 
-  async build(imageComposer: ImageComposer, ipfsDeployer: IpfsDeployer) {
+  async build(
+    imageComposer: ImageComposer,
+    ipfsDeployer: IpfsDeployer
+  ): Promise<void> | never {
     await this.composeNftsImages(imageComposer);
     await this.deployImagesAndMetadatasToIpfs(ipfsDeployer);
   }
 
-  private async composeNftsImages(imageComposer: ImageComposer) {
+  private async composeNftsImages(
+    imageComposer: ImageComposer
+  ): Promise<void> | never {
     for (let assignedTraitsOnNft of this.assignedTraitsOnNfts) {
       const nftId = assignedTraitsOnNft.nftId;
       const inputsPaths = this.getNftLayerImagesPaths(assignedTraitsOnNft);
@@ -36,9 +46,11 @@ export default class CollectionBuilder {
     }
   }
 
-  private getNftLayerImagesPaths(assignedTraitsOnNft: AssignedTraitsOnNft) {
+  private getNftLayerImagesPaths(
+    assignedTraitsOnNft: AssignedTraitsOnNft
+  ): string[] {
     const nftTraits = assignedTraitsOnNft.assignedTraits;
-    const inputsPaths = [];
+    const inputsPaths: string[] = [];
     for (let category in nftTraits) {
       const inputPath = `${this.inputLayerImagesDirectory}${category}/${nftTraits[category]}.png`;
       inputsPaths.push(inputPath);
@@ -46,19 +58,21 @@ export default class CollectionBuilder {
     return inputsPaths;
   }
 
-  private async deployImagesAndMetadatasToIpfs(ipfsDeployer: IpfsDeployer) {
+  private async deployImagesAndMetadatasToIpfs(
+    ipfsDeployer: IpfsDeployer
+  ): Promise<void> | never {
     const nftsMetadataCidsPromises = this.assignedTraitsOnNfts.map(
       async (assignedTraitsOnNft: AssignedTraitsOnNft) =>
         this.deployImageAndMetadataToIpfs(ipfsDeployer, assignedTraitsOnNft)
     );
     const nftsMetadataCids = await Promise.all(nftsMetadataCidsPromises);
-    console.log(nftsMetadataCids);
+    await writeToFile("./output.json", JSON.stringify(nftsMetadataCids));
   }
 
   private async deployImageAndMetadataToIpfs(
     ipfsDeployer: IpfsDeployer,
     assignedTraitsOnNft: AssignedTraitsOnNft
-  ): Promise<string> {
+  ): Promise<MetadataIpfsCidResponse> | never {
     const nftId = assignedTraitsOnNft.nftId;
     const imagePath = this.outputComposedImagesDirectory + nftId + ".png";
     const imageCid = await ipfsDeployer.addImage(imagePath);
@@ -68,6 +82,6 @@ export default class CollectionBuilder {
       this.assignedTraitsOnNfts[nftId].assignedTraits
     );
     const nftMetadataCid = await ipfsDeployer.addMetadata(nftMetadata);
-    return nftMetadataCid;
+    return { Ipfs_uri: nftMetadataCid };
   }
 }

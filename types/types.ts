@@ -18,3 +18,7 @@ export interface AssignedTraitsFromCategories {
 }
 
 type Trait = string;
+
+export interface MetadataIpfsCidResponse {
+  Ipfs_uri: string;
+}
