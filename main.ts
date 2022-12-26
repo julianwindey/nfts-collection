@@ -29,6 +29,6 @@ import(CATEGORIES_DISTRIBUTIONS_INPUT_PATH)
     return nftCollectionBuilder.build(sharpComposer, httpClientIpfsDeployer);
   })
   .then(() => {
-    console.log("NFTs metadata IPFS CIDs written on output.json");
+    console.log("NFTs metadata IPFS CIDs written on output.json.");
   })
   .catch(console.error);
